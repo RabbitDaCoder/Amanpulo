@@ -84,7 +84,7 @@ export function CheckoutPage() {
   const handleCreateBooking = async (e) => {
     e.preventDefault();
 
-    if (!guestDetails.name || !guestDetails.email || !guestDetails.phone) {
+    if (!guestDetails.name || !guestDetails.email) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -96,7 +96,6 @@ export function CheckoutPage() {
         roomId: selectedRoom._id,
         guestName: guestDetails.name,
         email: guestDetails.email,
-        phone: guestDetails.phone,
         checkIn: new Date(checkIn).toISOString(),
         checkOut: new Date(checkOut).toISOString(),
         guests,
@@ -188,18 +187,6 @@ export function CheckoutPage() {
                           value={guestDetails.email}
                           onChange={handleInputChange}
                           placeholder="your@email.com"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="phone">Phone Number *</Label>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          value={guestDetails.phone}
-                          onChange={handleInputChange}
-                          placeholder="+1 234 567 8900"
                           required
                         />
                       </div>

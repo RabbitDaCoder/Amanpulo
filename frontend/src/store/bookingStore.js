@@ -25,7 +25,6 @@ export const useBookingStore = create(
       guestDetails: {
         name: "",
         email: "",
-        phone: "",
         specialRequests: "",
       },
 
@@ -78,7 +77,7 @@ export const useBookingStore = create(
           checkIn: null,
           checkOut: null,
           guests: { adults: 1, children: 0 },
-          guestDetails: { name: "", email: "", phone: "", specialRequests: "" },
+          guestDetails: { name: "", email: "", specialRequests: "" },
           bookingResult: null,
           isLoading: false,
           error: null,

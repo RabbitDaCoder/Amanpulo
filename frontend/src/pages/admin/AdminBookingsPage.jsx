@@ -242,12 +242,6 @@ export function AdminBookingsPage() {
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-sand-500">Phone</p>
-                                  <p className="font-medium">
-                                    {selectedBooking.phone}
-                                  </p>
-                                </div>
-                                <div>
                                   <p className="text-sand-500">Room</p>
                                   <p className="font-medium">
                                     {selectedBooking.roomId?.name}

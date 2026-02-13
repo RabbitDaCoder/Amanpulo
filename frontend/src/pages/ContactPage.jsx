@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
+import { MapPin, Mail, Clock, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +14,6 @@ export function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
     subject: "",
     message: "",
   });
@@ -36,7 +35,6 @@ export function ContactPage() {
     setFormData({
       name: "",
       email: "",
-      phone: "",
       subject: "",
       message: "",
     });
@@ -48,11 +46,6 @@ export function ContactPage() {
       icon: MapPin,
       title: "Location",
       details: ["Pamalican Island", "Palawan, Philippines 5316"],
-    },
-    {
-      icon: Phone,
-      title: "Phone",
-      details: ["+63 2 8976 5200", "+63 917 123 4567"],
     },
     {
       icon: Mail,
@@ -167,29 +160,16 @@ export function ContactPage() {
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+1 234 567 8900"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subject *</Label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      placeholder="Reservation Inquiry"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject *</Label>
+                  <Input
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    placeholder="Reservation Inquiry"
+                  />
                 </div>
 
                 <div className="space-y-2">

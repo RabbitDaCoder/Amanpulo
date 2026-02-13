@@ -16,7 +16,6 @@ import { formatCurrency } from "@/lib/utils";
  *   ref={receiptRef}
  *   guestName="John Doe"
  *   guestEmail="john@example.com"
- *   guestPhone="+1 234 567 8900"
  *   bookingReference="AMAN-2026-00001"
  *   processingId="TXN-ABC123XYZ"
  *   roomDetails={{
@@ -37,7 +36,7 @@ import { formatCurrency } from "@/lib/utils";
  * ------
  * @param {string} guestName - Full name of the guest
  * @param {string} guestEmail - Email address
- * @param {string} guestPhone - Phone number
+ * @param {string} guestEmail - Email address
  * @param {string} bookingReference - Unique booking reference (e.g., AMAN-2026-00001)
  * @param {string} processingId - Payment processing ID
  * @param {Object} roomDetails - Room and pricing information
@@ -51,7 +50,6 @@ export const Receipt = forwardRef(function Receipt(
   {
     guestName,
     guestEmail,
-    guestPhone,
     bookingReference,
     processingId,
     roomDetails,
@@ -179,12 +177,6 @@ export const Receipt = forwardRef(function Receipt(
                 Email
               </p>
               <p className="text-[#2c2a26]">{guestEmail}</p>
-            </div>
-            <div>
-              <p className="text-[#8b7355] text-xs uppercase tracking-wider mb-1">
-                Phone
-              </p>
-              <p className="text-[#2c2a26]">{guestPhone}</p>
             </div>
             <div>
               <p className="text-[#8b7355] text-xs uppercase tracking-wider mb-1">
@@ -373,9 +365,6 @@ export const Receipt = forwardRef(function Receipt(
             </p>
             <p>
               <strong>Website:</strong> amanpuloresort.com
-            </p>
-            <p>
-              <strong>Phone:</strong> +63 (2) 8976 5200
             </p>
             <p>
               <strong>Address:</strong> Pamalican Island, Cuyo, Palawan,

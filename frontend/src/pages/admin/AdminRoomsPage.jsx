@@ -40,8 +40,19 @@ export function AdminRoomsPage() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editRoom, setEditRoom] = useState(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [discountRoom, setDiscountRoom] = useState(null);
-  const [editData, setEditData] = useState({ price: "" });
+  const [editData, setEditData] = useState({
+    name: "",
+    description: "",
+    category: "casita",
+    price: "",
+    totalRooms: "1",
+    maxGuests: "2",
+    images: "",
+    amenities: "",
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
   const [discountData, setDiscountData] = useState({
     isActive: false,
     percentage: 0,
@@ -136,18 +147,49 @@ export function AdminRoomsPage() {
     }
   };
 
-  const handleEditPrice = async () => {
-    if (!editRoom || !editData.price) return;
+  const handleEditRoom = async () => {
+    if (
+      !editRoom ||
+      !editData.name ||
+      !editData.price ||
+      !editData.description
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
 
+    setIsUpdating(true);
     try {
-      await adminRoomService.updateRoom(editRoom._id, {
+      const roomData = {
+        name: editData.name,
+        description: editData.description,
+        category: editData.category,
         price: parseFloat(editData.price),
-      });
-      toast.success("Price updated successfully");
+        totalRooms: parseInt(editData.totalRooms) || 1,
+        maxGuests: parseInt(editData.maxGuests) || 2,
+        images: editData.images
+          ? editData.images
+              .split(",")
+              .map((url) => url.trim())
+              .filter(Boolean)
+          : [],
+        amenities: editData.amenities
+          ? editData.amenities
+              .split(",")
+              .map((a) => a.trim())
+              .filter(Boolean)
+          : [],
+      };
+
+      await adminRoomService.updateRoom(editRoom._id, roomData);
+      toast.success("Room updated successfully");
       fetchRooms();
+      setShowEditDialog(false);
       setEditRoom(null);
     } catch {
-      toast.error("Failed to update price");
+      toast.error("Failed to update room");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -171,7 +213,17 @@ export function AdminRoomsPage() {
 
   const openEditDialog = (room) => {
     setEditRoom(room);
-    setEditData({ price: room.price.toString() });
+    setEditData({
+      name: room.name || "",
+      description: room.description || "",
+      category: room.category || "casita",
+      price: room.price?.toString() || "",
+      totalRooms: room.totalRooms?.toString() || "1",
+      maxGuests: room.maxGuests?.toString() || "2",
+      images: room.images?.join(", ") || "",
+      amenities: room.amenities?.join(", ") || "",
+    });
+    setShowEditDialog(true);
   };
 
   const openDiscountDialog = (room) => {
@@ -330,6 +382,167 @@ export function AdminRoomsPage() {
         </Dialog>
       </div>
 
+      {/* Edit Room Dialog */}
+      <Dialog
+        open={showEditDialog}
+        onOpenChange={(open) => {
+          setShowEditDialog(open);
+          if (!open) setEditRoom(null);
+        }}
+      >
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Room - {editRoom?.name}</DialogTitle>
+            <DialogDescription>
+              Update room details, pricing, and images
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-room-name">Room Name *</Label>
+                <Input
+                  id="edit-room-name"
+                  value={editData.name}
+                  onChange={(e) =>
+                    setEditData({ ...editData, name: e.target.value })
+                  }
+                  placeholder="e.g., Hillside Casita"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-room-category">Category *</Label>
+                <Select
+                  value={editData.category}
+                  onValueChange={(value) =>
+                    setEditData({ ...editData, category: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="casita">Casita</SelectItem>
+                    <SelectItem value="villa">Villa</SelectItem>
+                    <SelectItem value="pavilion">Pavilion</SelectItem>
+                    <SelectItem value="suite">Suite</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-room-description">Description *</Label>
+              <textarea
+                id="edit-room-description"
+                value={editData.description}
+                onChange={(e) =>
+                  setEditData({ ...editData, description: e.target.value })
+                }
+                rows={3}
+                placeholder="Describe the room..."
+                className="flex w-full rounded-md border border-sand-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-sand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sand-900 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-room-price">Price per Night (USD) *</Label>
+                <Input
+                  id="edit-room-price"
+                  type="number"
+                  value={editData.price}
+                  onChange={(e) =>
+                    setEditData({ ...editData, price: e.target.value })
+                  }
+                  placeholder="850"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-room-total">Total Rooms</Label>
+                <Input
+                  id="edit-room-total"
+                  type="number"
+                  value={editData.totalRooms}
+                  onChange={(e) =>
+                    setEditData({ ...editData, totalRooms: e.target.value })
+                  }
+                  placeholder="1"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-room-guests">Max Guests</Label>
+                <Input
+                  id="edit-room-guests"
+                  type="number"
+                  value={editData.maxGuests}
+                  onChange={(e) =>
+                    setEditData({ ...editData, maxGuests: e.target.value })
+                  }
+                  placeholder="2"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-room-images">
+                Image URLs (comma separated)
+              </Label>
+              <Input
+                id="edit-room-images"
+                value={editData.images}
+                onChange={(e) =>
+                  setEditData({ ...editData, images: e.target.value })
+                }
+                placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+              />
+              {editData.images && (
+                <div className="flex gap-2 mt-2 flex-wrap">
+                  {editData.images
+                    .split(",")
+                    .map(
+                      (url, idx) =>
+                        url.trim() && (
+                          <img
+                            key={idx}
+                            src={url.trim()}
+                            alt={`Preview ${idx + 1}`}
+                            className="w-16 h-16 object-cover rounded border"
+                            onError={(e) => (e.target.style.display = "none")}
+                          />
+                        ),
+                    )}
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-room-amenities">
+                Amenities (comma separated)
+              </Label>
+              <Input
+                id="edit-room-amenities"
+                value={editData.amenities}
+                onChange={(e) =>
+                  setEditData({ ...editData, amenities: e.target.value })
+                }
+                placeholder="Private Pool, Ocean View, King Bed, Mini Bar"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowEditDialog(false);
+                setEditRoom(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditRoom} disabled={isUpdating}>
+              {isUpdating ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Card>
         <CardContent className="p-0">
           {loading ? (
@@ -405,49 +618,13 @@ export function AdminRoomsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openEditDialog(room)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Edit Price - {editRoom?.name}
-                              </DialogTitle>
-                              <DialogDescription>
-                                Update the nightly rate for this room
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="py-4">
-                              <Label htmlFor="price">
-                                Price per Night (USD)
-                              </Label>
-                              <Input
-                                id="price"
-                                type="number"
-                                value={editData.price}
-                                onChange={(e) =>
-                                  setEditData({
-                                    ...editData,
-                                    price: e.target.value,
-                                  })
-                                }
-                                className="mt-2"
-                              />
-                            </div>
-                            <DialogFooter>
-                              <Button onClick={handleEditPrice}>
-                                Save Changes
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => openEditDialog(room)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
 
                         <Dialog
                           open={discountRoom?._id === room._id}

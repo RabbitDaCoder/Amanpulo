@@ -100,7 +100,6 @@ export const bookingValidation = {
       .withMessage("Email is required")
       .isEmail()
       .withMessage("Please provide a valid email"),
-    body("phone").trim().notEmpty().withMessage("Phone number is required"),
     body("checkIn")
       .notEmpty()
       .withMessage("Check-in date is required")

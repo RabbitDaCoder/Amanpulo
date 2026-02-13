@@ -246,7 +246,6 @@ export function SuccessPage() {
                   ref={receiptRef}
                   guestName={bookingResult.guestName || guestDetails?.name}
                   guestEmail={bookingResult.email || guestDetails?.email}
-                  guestPhone={bookingResult.phone || guestDetails?.phone}
                   bookingReference={bookingResult.bookingReference}
                   processingId={`TXN-${Date.now().toString(36).toUpperCase()}`}
                   roomDetails={roomDetails}

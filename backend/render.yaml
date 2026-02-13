@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: amanpulo-api
+    name: amanpulo-server-endpoint
     runtime: node
     buildCommand: npm install
     startCommand: npm start

@@ -199,7 +199,6 @@ const seedDatabase = async () => {
       roomId: rooms[0]._id,
       guestName: "John Smith",
       email: "john.smith@example.com",
-      phone: "+1 555-123-4567",
       checkIn: new Date("2026-03-15"),
       checkOut: new Date("2026-03-20"),
       guests: { adults: 2, children: 0 },
