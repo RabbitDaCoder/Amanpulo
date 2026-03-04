@@ -32,7 +32,7 @@ import { useChatStore } from "@/store/chatStore";
 // ============================================
 // Replace this key with your Smartsupp account key
 // Get it from: https://www.smartsupp.com/ → Dashboard → Chat → Code
-const SMARTSUPP_KEY = "9f40ed644a4b74b5b3481aa3dfd33590a65b6bea";
+const SMARTSUPP_KEY = "9f58c4e372410ca4a06951bfc9e92d55e83dde7b";
 
 /**
  * LiveSupport Component
@@ -45,6 +45,7 @@ const SMARTSUPP_KEY = "9f40ed644a4b74b5b3481aa3dfd33590a65b6bea";
  * @param {number} props.autoOpenDelay - Delay before auto-opening in ms (default: 2000)
  * @param {boolean} props.showButton - Whether to show the floating button (default: true)
  * @param {string} props.buttonPosition - Button position: 'bottom-right' | 'bottom-left' (default: 'bottom-right')
+ * @param {boolean} props.fullScreen - Whether the chat widget should be full screen (default: false, shows half size)
  */
 export function LiveSupport({
   guestName = "",
@@ -54,9 +55,52 @@ export function LiveSupport({
   autoOpenDelay = 2000,
   showButton = true,
   buttonPosition = "bottom-right",
+  fullScreen = false,
 }) {
   const { isLoaded, setLoaded, hasAutoOpened, setAutoOpened } = useChatStore();
   const scriptLoadedRef = useRef(false);
+  const styleRef = useRef(null);
+
+  /**
+   * Inject CSS to control the Smartsupp chat widget size
+   * By default: half-screen (max 50% height, 380px width)
+   * When fullScreen prop is true: no size restrictions
+   */
+  useEffect(() => {
+    // Remove previous style if it exists
+    if (styleRef.current) {
+      styleRef.current.remove();
+      styleRef.current = null;
+    }
+
+    if (!fullScreen) {
+      const style = document.createElement("style");
+      style.id = "smartsupp-size-override";
+      style.textContent = `
+        #smartsupp-widget-container iframe,
+        #chat-application iframe,
+        div[id*="smartsupp"] iframe {
+          max-height: 50vh !important;
+          max-width: 380px !important;
+        }
+        #smartsupp-widget-container,
+        #chat-application,
+        div[id*="smartsupp"] {
+          max-height: 50vh !important;
+          max-width: 380px !important;
+        }
+      `;
+      document.head.appendChild(style);
+      styleRef.current = style;
+    }
+
+    return () => {
+      if (styleRef.current) {
+        styleRef.current.remove();
+        styleRef.current = null;
+      }
+    };
+  }, [fullScreen]);
 
   /**
    * Initialize Smartsupp chat script

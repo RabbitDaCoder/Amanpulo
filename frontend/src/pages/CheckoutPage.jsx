@@ -419,6 +419,7 @@ export function CheckoutPage() {
         guestEmail={guestDetails.email}
         bookingReference={bookingReference}
         showButton={false}
+        fullScreen={true}
       />
     </div>
   );
